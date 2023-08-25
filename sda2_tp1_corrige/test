@@ -1,0 +1,29 @@
+#!/bin/sh
+# Test all implemented sorts algorithms with various values in one go.
+
+readonly sizes="0 1 2 10000 10001"
+readonly sorts="bubble shaker binary merge quick"
+status=0
+
+run(){ for i in $(seq 5); do $1 >/dev/null 2>&1 || return 1; done; return 0; }
+
+# Header
+printf "\033[1m  %-12s" "sort / size"
+for size in ${sizes}; do printf "  %8s" ${size}; done
+printf "\033[0m\n"
+
+# Tests
+for sorter in ${sorts}; do
+  printf "  %-12s" "${sorter}"
+  for size in ${sizes}; do
+    if run "./${sorter}_sort -n ${size}"; then
+      printf "\033[32m  %8s\033[0m" "PASS"
+    else
+      status=1
+      printf "\033[31m  %8s\033[0m" "FAIL"
+    fi
+  done
+  printf "\n"
+done
+
+exit "${status}"
